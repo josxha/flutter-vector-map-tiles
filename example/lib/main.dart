@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as material show Theme;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vector_map_tiles/src/widgets/tile_positioning_debug_layer.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
-import 'package:vector_tile_renderer/vector_tile_renderer.dart' hide TileLayer;
-// ignore: uri_does_not_exist
-import 'api_key.dart';
+import 'package:vector_map_tiles_example/local_light_style.dart';
+import 'package:vector_map_tiles_example/local_tile_providers.dart';
+import 'package:vector_map_tiles_example/map_info.dart';
+import 'package:vector_tile_renderer/vector_tile_renderer.dart'
+    hide TileLayer, Theme;
 
 void main() {
   runApp(const MyApp());
@@ -14,13 +16,15 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'vector_map_tiles Example',
-      theme: ThemeData.light(),
-      home: const MyHomePage(title: 'vector_map_tiles Example'),
+      title: 'Vector Map Tiles Example',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Vector Map Tiles Example'),
     );
   }
 }
@@ -35,88 +39,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final MapController _controller = MapController();
-  Style? _style;
-  Object? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _initStyle();
-  }
-
-  void _initStyle() async {
-    try {
-      _style = await _readStyle();
-    } catch (e, stack) {
-      // ignore: avoid_print
-      print(e);
-      // ignore: avoid_print
-      print(stack);
-      _error = e;
-    }
-    setState(() {});
-  }
-
+  final theme = ThemeReader(logger: const Logger.console()).read(lightStyle());
   @override
   Widget build(BuildContext context) {
-    final children = <Widget>[];
-    if (_error != null) {
-      children.add(Expanded(child: Text(_error!.toString())));
-    } else if (_style == null) {
-      children.add(const Center(child: CircularProgressIndicator()));
-    } else {
-      children.add(Flexible(child: _map(_style!)));
-      children.add(Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [_statusText()]));
-    }
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: SafeArea(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: children)));
-  }
-
-// alternates:
-//   Mapbox - mapbox://styles/mapbox/streets-v12?access_token={key}
-//   Maptiler - https://api.maptiler.com/maps/outdoor/style.json?key={key}
-//   Stadia Maps - https://tiles.stadiamaps.com/styles/outdoors.json?api_key={key}
-  Future<Style> _readStyle() => StyleReader(
-          uri: 'mapbox://styles/mapbox/streets-v12?access_token={key}',
-          // ignore: undefined_identifier
-          apiKey: mapboxApiKey,
-          logger: const Logger.console())
-      .read();
-
-  Widget _map(Style style) => FlutterMap(
-        mapController: _controller,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: FlutterMap(
         options: MapOptions(
-            initialCenter: style.center ?? const LatLng(49.246292, -123.116226),
-            initialZoom: style.zoom ?? 10,
-            maxZoom: 22,
-            backgroundColor: material.Theme.of(context).canvasColor),
+          initialCenter: const LatLng(49.246292, -123.116226),
+          initialZoom: 12.5,
+          maxZoom: 18.0,
+        ),
         children: [
           VectorTileLayer(
-              tileProviders: style.providers,
-              theme: style.theme,
-              sprites: style.sprites,
-              maximumZoom: 22,
-              tileOffset: TileOffset.mapbox,
-              layerMode: VectorTileLayerMode.vector)
+            tileProviders: tileProviders(),
+            theme: theme,
+            tileOffset: TileOffset.DEFAULT,
+          ),
+          MapInfo(),
         ],
-      );
-
-  Widget _statusText() => Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 8),
-      child: StreamBuilder(
-          stream: _controller.mapEventStream,
-          builder: (context, snapshot) {
-            return Text(
-                'Zoom: ${_controller.camera.zoom.toStringAsFixed(2)} Center: ${_controller.camera.center.latitude.toStringAsFixed(4)},${_controller.camera.center.longitude.toStringAsFixed(4)}');
-          }));
+      ),
+    );
+  }
 }

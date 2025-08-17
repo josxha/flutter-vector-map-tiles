@@ -26,14 +26,14 @@ class NetworkVectorTileProvider extends VectorTileProvider {
   ///  confused with the maximum zoom of the map widget. The map widget will
   ///  automatically use vector tiles from lower zoom levels once the maximum
   ///  supported by this provider is reached.
-  NetworkVectorTileProvider(
-      {required String urlTemplate,
-      this.type = TileProviderType.vector,
-      this.httpHeaders,
-      this.tileOffset = TileOffset.DEFAULT,
-      this.maximumZoom = 16,
-      this.minimumZoom = 1})
-      : _urlProvider = _UrlProvider(urlTemplate);
+  NetworkVectorTileProvider({
+    required String urlTemplate,
+    this.type = TileProviderType.vector,
+    this.httpHeaders,
+    this.tileOffset = TileOffset.DEFAULT,
+    this.maximumZoom = 16,
+    this.minimumZoom = 1,
+  }) : _urlProvider = _UrlProvider(urlTemplate);
 
   @override
   Future<Uint8List> provide(TileIdentity tile) async {
@@ -47,12 +47,13 @@ class NetworkVectorTileProvider extends VectorTileProvider {
       }
       final logSafeUri = uri.toString().split(RegExp(r'\?')).first;
       throw ProviderException(
-          message:
-              'Cannot retrieve tile: HTTP ${response.statusCode}: $logSafeUri ${response.body}',
-          statusCode: response.statusCode,
-          retryable: _isRetryable(response.statusCode)
-              ? Retryable.retry
-              : Retryable.none);
+        message:
+            'Cannot retrieve tile: HTTP ${response.statusCode}: $logSafeUri ${response.body}',
+        statusCode: response.statusCode,
+        retryable: _isRetryable(response.statusCode)
+            ? Retryable.retry
+            : Retryable.none,
+      );
     } on ClientException catch (e) {
       throw ProviderException(message: e.message, retryable: Retryable.retry);
     } finally {
@@ -63,13 +64,14 @@ class NetworkVectorTileProvider extends VectorTileProvider {
   void _checkTile(TileIdentity tile) {
     if (tile.z > maximumZoom || tile.z < minimumZoom || !tile.isValid()) {
       throw ProviderException(
-          message: 'Invalid tile coordinates $tile',
-          retryable: Retryable.none,
-          statusCode: 400);
+        message: 'Invalid tile coordinates $tile (max=$maximumZoom)',
+        retryable: Retryable.none,
+        statusCode: 400,
+      );
     }
   }
 
-  _isRetryable(int statusCode) => statusCode == 503 || statusCode == 408;
+  bool _isRetryable(int statusCode) => statusCode == 503 || statusCode == 408;
 }
 
 class _UrlProvider {
@@ -88,7 +90,8 @@ class _UrlProvider {
           return identity.z.toInt().toString();
         default:
           throw Exception(
-              'unexpected url template: $urlTemplate - token ${match.group(1)} is not supported');
+            'unexpected url template: $urlTemplate - token ${match.group(1)} is not supported',
+          );
       }
     });
   }

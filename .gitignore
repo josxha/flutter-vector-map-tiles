@@ -77,6 +77,6 @@ build/
 !**/ios/**/default.perspectivev3
 
 coverage/
-example/lib/local_*
+local_*
 
 pubspec.lock
