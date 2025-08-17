@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:stash/stash_api.dart' as stash;
+import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import 'cache.dart';
 
@@ -33,11 +34,10 @@ class AbstractStashCache extends Cache {
           entry = await load(lookupKey);
           try {
             await cache.put(lookupKey, entry);
-          } on PathNotFoundException catch (e) {
-            //ignore
+          } on PathNotFoundException catch (_) {
+            //ignore, expected (why?)
           } catch (e, stack) {
-            print(e);
-            print(stack);
+            Logger.console().warn(() => '$e\n$stack');
           }
           completer.complete(entry);
         } catch (e) {
