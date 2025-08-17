@@ -1,25 +1,6 @@
-## 9.0.0-beta.8
+## 10.0.0+beta.1
 
-* udpate `flutter_map` dependency to 8.1.1
-* accept HTTP 204 for raster tiles
-* fix image codec leak
-* fix text size issue on raster tiles
-* improve support for multiple layers
-* add `FileVectorTileProvider`
-* fix rendering defect with multiple tile sources
-* skip missing raster tiles
-
-## 9.0.0-beta.3
-
-* Reduce data usage for contour lines.
-
-## 9.0.0-beta.2
-
-* Added support for sources of type [`raster-dem`](https://docs.mapbox.com/style-spec/reference/sources/) to produce contour lines. This feature is beta and could change.
-
-## 9.0.0-beta.1
-
-* Added web support. This feature is beta and could change.
+* Simplify to improve maintainability and prepare for GPU-based rendering
 
 ## 8.0.0
 
