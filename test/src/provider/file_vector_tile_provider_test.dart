@@ -113,12 +113,12 @@ void main() {
       });
 
       test('handles relative root paths', () async {
-        final relativeDir = Directory('${tempPath}/relative');
+        final relativeDir = Directory('$tempPath/relative');
         await relativeDir.create(recursive: true);
         await _createTileFile(relativeDir.path, 2, 1, 0, 'mvt', [10, 20, 30]);
 
         final provider = FileVectorTileProvider(
-          root: '${tempPath}/relative',
+          root: '$tempPath/relative',
           extension: 'mvt',
           type: TileProviderType.vector,
           maximumZoom: 16,

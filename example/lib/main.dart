@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:vector_map_tiles/src/widgets/tile_positioning_debug_layer.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart';
 import 'package:vector_map_tiles_example/local_light_style.dart';
 import 'package:vector_map_tiles_example/local_tile_providers.dart';

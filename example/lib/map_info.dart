@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 
 class MapInfo extends StatefulWidget {
+  const MapInfo({super.key});
+
   @override
   State<StatefulWidget> createState() => _MapInfoState();
 }
