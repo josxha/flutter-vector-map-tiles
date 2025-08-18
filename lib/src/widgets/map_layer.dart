@@ -72,7 +72,9 @@ class MapTilesPainter extends CustomPainter {
   MapTilesPainter(this.properties, this.tilesRenderer);
 
   @override
-  void paint(Canvas canvas, Size size) {}
+  void paint(Canvas canvas, Size size) {
+    tilesRenderer.render(canvas, size);
+  }
 
   @override
   bool shouldRepaint(covariant MapTilesPainter oldDelegate) => true;

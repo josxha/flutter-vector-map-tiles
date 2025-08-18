@@ -69,14 +69,14 @@ class VectorTileLayer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => buildRaster(context);
+  Widget build(BuildContext context) => _buildCanvas(context);
 
-  Widget buildGpu(BuildContext context) => MapLayer(
+  Widget _buildGpu(BuildContext context) => MapLayer(
     key: Key('map_layer_${theme.id}_${theme.version}'),
     mapProperties: _createMapProperties(),
   );
 
-  Widget buildRaster(BuildContext context) => MapTilesLayer(
+  Widget _buildCanvas(BuildContext context) => MapTilesLayer(
     key: Key('map_tiles_${theme.id}_${theme.version}'),
     mapProperties: _createMapProperties(),
   );
