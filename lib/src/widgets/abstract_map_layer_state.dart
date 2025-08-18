@@ -23,15 +23,18 @@ abstract class AbstractMapLayerState<T extends AbstractMapLayer>
   late final Executor executor;
   late final TileLoader tileLoader;
   late final MapTiles mapTiles;
-  late final FlutterMapAdapter _mapAdapter;
+  FlutterMapAdapter? _mapAdapter;
 
   @override
   void dispose() {
-    _mapAdapter.dispose();
+    executor.dispose();
+    _mapAdapter?.dispose();
     super.dispose();
   }
 
-  void updateTiles(BuildContext context) => _mapAdapter.update(context);
+  double get zoom => _mapAdapter?.zoom ?? 1.0;
+
+  void updateTiles(BuildContext context) => _mapAdapter?.update(context);
 
   @override
   void initState() {
@@ -41,7 +44,7 @@ abstract class AbstractMapLayerState<T extends AbstractMapLayer>
     );
     tileLoader = widget.tileLoaderFactory(widget.mapProperties, executor);
     mapTiles = MapTiles(tileLoader: tileLoader);
-    _mapAdapter = FlutterMapAdapter(
+    _mapAdapter ??= FlutterMapAdapter(
       mapTiles: mapTiles,
       mapUpdated: _mapUpdated,
       tileOffset: widget.mapProperties.tileOffset,

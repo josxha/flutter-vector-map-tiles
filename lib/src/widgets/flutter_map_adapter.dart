@@ -20,12 +20,15 @@ class FlutterMapAdapter {
   final TileOffset tileOffset;
   final MapTiles mapTiles;
   final MapUpdatedCallback mapUpdated;
+  double _zoom = 1.0;
 
   FlutterMapAdapter({
     required this.tileOffset,
     required this.mapUpdated,
     required this.mapTiles,
   });
+
+  double get zoom => _zoom;
 
   void dispose() {
     _subscription?.cancel();
@@ -48,8 +51,9 @@ class FlutterMapAdapter {
         viewport: viewport,
         tileSize: tileSize,
       );
+      _zoom = controller.camera.zoom;
       final zoomScaler = FlutterMapZoomScaler(crs: controller.camera.crs)
-        ..updateMapZoomScale(controller.camera.zoom);
+        ..updateMapZoomScale(_zoom);
       final tilePositions = layout.computeTilePositions(mapState, zoomScaler);
       mapTiles.updateTiles(tilePositions);
       for (final model in mapTiles.obsoleteModels) {
