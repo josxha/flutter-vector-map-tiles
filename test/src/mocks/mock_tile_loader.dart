@@ -14,13 +14,13 @@ class MockTileLoader implements TileLoader {
     _completers[key] = completer;
 
     if (_shouldComplete[key] == true) {
-      model.displayReady = true;
+      model.isDisplayReady = true;
       completer.complete();
     }
 
     await completer.future;
     if (!cancelled()) {
-      model.displayReady = true;
+      model.isDisplayReady = true;
     }
   }
 

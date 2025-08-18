@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:executor_lib/executor_lib.dart';
 import 'package:flutter/widgets.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
@@ -31,6 +32,16 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
   void dispose() {
     super.dispose();
     tilesRenderer.dispose();
+  }
+
+  @override
+  Future<void> preRender(TileDataModel tile) async {
+    return executor.submit(Job(
+        "pre-render",
+        TilesRenderer.preRender,
+        (widget.mapProperties.theme, zoom, tile.tileset ?? Tileset({})),
+        deduplicationKey: "pre-render:${tile.tile.key()}")
+    );
   }
 
   @override

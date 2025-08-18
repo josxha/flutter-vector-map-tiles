@@ -37,7 +37,7 @@ class DefaultTileLoader extends TileLoader {
 
       model.tileset = tileset;
       model.rasterTileset = rasterTileset;
-      model.displayReady = true;
+      model.isLoaded = true;
     } catch (e) {
       rasterTileset?.dispose();
       rethrow;

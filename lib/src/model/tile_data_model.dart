@@ -6,17 +6,16 @@ import '../tile_identity.dart';
 class TileDataModel {
   late final TileIdentity tile;
   TilePosition tilePosition;
-  bool _displayReady = false;
+  bool isLoaded = false;
+  bool isDisplayReady = false;
   Tileset? tileset;
   RasterTileset? rasterTileset;
 
   TileDataModel(this.tilePosition) : tile = tilePosition.tile;
 
-  bool get isDisplayReady => _displayReady;
-  set displayReady(bool newReady) => _displayReady = newReady;
-
   void dispose() {
-    _displayReady = false;
+    isLoaded = false;
+    isDisplayReady = false;
     rasterTileset?.dispose();
     rasterTileset = null;
     tileset = null;
