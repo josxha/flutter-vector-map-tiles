@@ -1,5 +1,6 @@
 import 'package:executor_lib/executor_lib.dart';
 import 'package:flutter/widgets.dart';
+import 'package:vector_map_tiles/src/model/tile_data_model.dart';
 
 import '../executors/executors_std.dart';
 import '../loader/tile_loader.dart';
@@ -34,7 +35,16 @@ abstract class AbstractMapLayerState<T extends AbstractMapLayer>
 
   double get zoom => _mapAdapter?.zoom ?? 1.0;
 
-  void updateTiles(BuildContext context) => _mapAdapter?.update(context);
+  void updateTiles(BuildContext context) {
+    for (final tile in mapTiles.tileModels.where((model) => model.isLoaded && !model.isDisplayReady)) {
+      preRender(tile).then((_) {
+        tile.isDisplayReady = tile.isLoaded;
+      });
+    }
+    _mapAdapter?.update(context);
+  }
+
+  Future<void> preRender(TileDataModel tile) => Future.sync(() {});
 
   @override
   void initState() {

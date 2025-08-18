@@ -6,6 +6,6 @@ class NoOpTileLoader extends TileLoader {
 
   @override
   Future<void> load(TileDataModel model, bool Function() cancelled) async {
-    model.displayReady = true;
+    model.isDisplayReady = true;
   }
 }
