@@ -47,18 +47,18 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: FlutterMap(
-        options: MapOptions(
-          initialCenter: const LatLng(49.246292, -123.116226),
+        options: const MapOptions(
+          initialCenter: LatLng(49.246292, -123.116226),
           initialZoom: 12.5,
           maxZoom: 18.0,
         ),
         children: [
-          VectorTileLayer(
+          SizedBox.expand(child: VectorTileLayer(
             tileProviders: tileProviders(),
             theme: theme,
             tileOffset: TileOffset.DEFAULT,
-          ),
-          MapInfo(),
+          )),
+          const MapInfo(),
         ],
       ),
     );
