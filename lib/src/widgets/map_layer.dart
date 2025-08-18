@@ -41,7 +41,9 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
         TilesRenderer.preRender,
         (widget.mapProperties.theme, zoom, tile.tileset ?? Tileset({})),
         deduplicationKey: "pre-render:${tile.tile.key()}")
-    );
+    ).then((renderData) {
+      tile.renderData = renderData;
+    });
   }
 
   @override
@@ -96,7 +98,8 @@ extension _TileDataModelUiExtension on TileDataModel {
     tileId: tile.toTileId(),
     position: tilePosition.position,
     tileset: tileset ?? Tileset({}),
-    rasterTileset: rasterTileset ?? RasterTileset(tiles: {}),
+    rasterTileset: rasterTileset ?? const RasterTileset(tiles: {}),
+    renderData: renderData
   );
 }
 
