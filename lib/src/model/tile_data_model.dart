@@ -10,6 +10,7 @@ class TileDataModel {
   bool isDisplayReady = false;
   Tileset? tileset;
   RasterTileset? rasterTileset;
+  dynamic renderData;
 
   TileDataModel(this.tilePosition) : tile = tilePosition.tile;
 
@@ -19,5 +20,6 @@ class TileDataModel {
     rasterTileset?.dispose();
     rasterTileset = null;
     tileset = null;
+    renderData = null;
   }
 }
