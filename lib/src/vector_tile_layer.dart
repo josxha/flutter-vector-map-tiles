@@ -8,6 +8,7 @@ import 'cache/cache.dart';
 import 'model/map_properties.dart';
 import 'tile_offset.dart';
 import 'tile_providers.dart';
+import 'widgets/map_layer.dart';
 import 'widgets/map_tiles_layer.dart';
 
 /// A widget for a vector tile layer, to be used as a child
@@ -68,18 +69,27 @@ class VectorTileLayer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => MapTilesLayer(
+  Widget build(BuildContext context) => buildRaster(context);
+
+  Widget buildGpu(BuildContext context) => MapLayer(
+    key: Key('map_layer_${theme.id}_${theme.version}'),
+    mapProperties: _createMapProperties(),
+  );
+
+  Widget buildRaster(BuildContext context) => MapTilesLayer(
     key: Key('map_tiles_${theme.id}_${theme.version}'),
-    mapProperties: MapProperties(
-      tileProviders: tileProviders,
-      theme: theme,
-      tileOffset: tileOffset,
-      concurrency: concurrency,
-      cacheProperties: CacheProperties(
-        fileCacheTtl: fileCacheTtl,
-        fileCacheMaximumEntries: fileCacheMaximumEntries,
-        cacheFolder: cacheFolder,
-      ),
+    mapProperties: _createMapProperties(),
+  );
+
+  MapProperties _createMapProperties() => MapProperties(
+    tileProviders: tileProviders,
+    theme: theme,
+    tileOffset: tileOffset,
+    concurrency: concurrency,
+    cacheProperties: CacheProperties(
+      fileCacheTtl: fileCacheTtl,
+      fileCacheMaximumEntries: fileCacheMaximumEntries,
+      cacheFolder: cacheFolder,
     ),
   );
 }

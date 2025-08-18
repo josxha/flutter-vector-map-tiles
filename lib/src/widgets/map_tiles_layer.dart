@@ -1,5 +1,6 @@
 import 'package:executor_lib/executor_lib.dart';
 import 'package:flutter/material.dart';
+import 'package:vector_map_tiles/src/loader/caching_tile_loader.dart';
 
 import '../cache/cache_tiered.dart';
 import '../loader/default_tile_loader.dart';
@@ -11,7 +12,7 @@ import 'tile_widget.dart';
 
 class MapTilesLayer extends AbstractMapLayer {
   const MapTilesLayer({super.key, required super.mapProperties})
-    : super(tileLoaderFactory: _createCachingTileLoader);
+    : super(tileLoaderFactory: createCachingTileLoader);
 
   @override
   State<StatefulWidget> createState() => MapTilesLayerState();
@@ -40,13 +41,3 @@ class MapTilesLayerState extends AbstractMapLayerState<MapTilesLayer> {
     );
   }
 }
-
-TileLoader _createCachingTileLoader(
-  MapProperties mapProperties,
-  Executor executor,
-) => DefaultTileLoader(
-  tileSize: 256.0,
-  mapProperties: mapProperties,
-  executor: executor,
-  cache: CacheTiered(properties: mapProperties.cacheProperties),
-);
