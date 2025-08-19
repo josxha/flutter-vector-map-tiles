@@ -42,7 +42,7 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
         (widget.mapProperties.theme, zoom, tile.tileset ?? Tileset({})),
         deduplicationKey: "pre-render:${tile.tile.key()}")
     ).then((renderData) {
-      tile.renderData = renderData;
+      tile.renderData ??= renderData.materialize().asUint8List();
     });
   }
 
