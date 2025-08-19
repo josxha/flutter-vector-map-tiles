@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import '../layout/tile_position.dart';
@@ -10,7 +12,7 @@ class TileDataModel {
   bool isDisplayReady = false;
   Tileset? tileset;
   RasterTileset? rasterTileset;
-  dynamic renderData;
+  Uint8List? renderData;
 
   TileDataModel(this.tilePosition) : tile = tilePosition.tile;
 
