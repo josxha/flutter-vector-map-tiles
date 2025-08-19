@@ -51,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           initialCenter: LatLng(49.246292, -123.116226),
           initialZoom: 12.5,
           maxZoom: 18.0,
+          interactionOptions: InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate)
         ),
         children: [
           SizedBox.expand(child: VectorTileLayer(
