@@ -12,6 +12,8 @@ class MockMapState implements MapState {
   final Offset pixelOrigin;
   @override
   final Size size;
+  @override
+  Size get nonRotatedSize => size;
 
   MockMapState({
     required this.center,
