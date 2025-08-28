@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:executor_lib/executor_lib.dart';
 import 'package:flutter/widgets.dart';
@@ -38,7 +39,7 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
   Future<void> preRender(TileDataModel tile) async {
     return executor.submit(Job(
         "pre-render",
-        TilesRenderer.preRender,
+        (args) => TransferableTypedData.fromList([TilesRenderer.preRender(args)]),
         (widget.mapProperties.theme, zoom, tile.tileset ?? Tileset({})),
         deduplicationKey: "pre-render:${tile.tile.key()}")
     ).then((renderData) {
