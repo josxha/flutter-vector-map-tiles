@@ -34,6 +34,7 @@ abstract class AbstractMapLayerState<T extends AbstractMapLayer>
   }
 
   double get zoom => _mapAdapter?.zoom ?? 1.0;
+  double get rotation => _mapAdapter?.rotation ?? 0.0;
 
   void updateTiles(BuildContext context) {
     for (final tile in mapTiles.tileModels.where((model) => model.isLoaded && !model.isDisplayReady)) {

@@ -39,6 +39,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final theme = ThemeReader(logger: const Logger.console()).read(lightStyle());
+
+  final options = const MapOptions(
+    initialCenter: LatLng(49.246292, -123.116226),
+    initialZoom: 12.5,
+    maxZoom: 18.0,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,12 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: FlutterMap(
-        options: const MapOptions(
-          initialCenter: LatLng(49.246292, -123.116226),
-          initialZoom: 12.5,
-          maxZoom: 18.0,
-          interactionOptions: InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate)
-        ),
+        options: options,
         children: [
           SizedBox.expand(child: VectorTileLayer(
             tileProviders: tileProviders(),

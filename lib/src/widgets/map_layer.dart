@@ -65,7 +65,7 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
       key: Key(
         'mapTileLayer_${widget.mapProperties.theme.id}_${widget.mapProperties.theme.version}',
       ),
-      painter: MapTilesPainter(widget.mapProperties, tilesRenderer),
+      painter: MapTilesPainter(widget.mapProperties, tilesRenderer, rotation),
       isComplex: true,
     );
   }
@@ -82,12 +82,13 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
 class MapTilesPainter extends CustomPainter {
   final MapProperties properties;
   final TilesRenderer tilesRenderer;
+  final double rotation;
 
-  MapTilesPainter(this.properties, this.tilesRenderer);
+  MapTilesPainter(this.properties, this.tilesRenderer, this.rotation);
 
   @override
   void paint(Canvas canvas, Size size) {
-    tilesRenderer.render(canvas, size);
+    tilesRenderer.render(canvas, size, rotation);
   }
 
   @override
