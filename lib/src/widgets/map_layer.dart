@@ -25,7 +25,7 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
   @override
   void initState() {
     super.initState();
-    tilesRenderer = TilesRenderer();
+    tilesRenderer = TilesRenderer(widget.mapProperties.theme);
     TilesRenderer.initialize.then(_initialized);
   }
 
@@ -36,16 +36,40 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
   }
 
   @override
-  Future<void> preRender(TileDataModel tile) async {
-    return executor.submit(Job(
-        "pre-render",
-        (args) => TransferableTypedData.fromList([TilesRenderer.preRender(args)]),
-        (widget.mapProperties.theme, zoom, tile.tileset ?? Tileset({})),
-        deduplicationKey: "pre-render:${tile.tile.key()}")
-    ).then((renderData) {
-      tile.renderData ??= renderData.materialize().asUint8List();
-    });
+  void didUpdateWidget(covariant MapLayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.mapProperties.theme != widget.mapProperties.theme) {
+      tilesRenderer.dispose();
+      tilesRenderer = TilesRenderer(widget.mapProperties.theme);
+      super.resetState();
+    }
   }
+
+  @override
+  Future<void> preRender(TileDataModel tile) async {
+    final tileset = tile.tileset ?? Tileset({});
+    final jobArguments = (widget.mapProperties.theme, zoom, tileset);
+    final tilePrerendering = executor
+        .submit(
+          Job(
+            "pre-render",
+            _preRender,
+            jobArguments,
+            deduplicationKey:
+                "pre-render:${widget.mapProperties.theme.id}-${widget.mapProperties.theme.version}-$zoom-${tile.tile.key()}",
+          ),
+        )
+        .then((renderData) {
+          tile.renderData ??= renderData.materialize().asUint8List();
+        });
+    final uiPrerendering = tilesRenderer.preRenderUi(zoom, tileset);
+    await Future.wait([tilePrerendering, uiPrerendering]);
+  }
+
+  static TransferableTypedData _preRender((Theme, double, Tileset) args) =>
+      TransferableTypedData.fromList([
+        TilesRenderer.preRender(args.$1, args.$2, args.$3),
+      ]);
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +83,7 @@ class MapLayerState extends AbstractMapLayerState<MapLayer> {
     final uiTiles = tileModels
         .map((it) => it.toUiModel())
         .toList(growable: false);
-    tilesRenderer.update(widget.mapProperties.theme, zoom, uiTiles);
+    tilesRenderer.update(zoom, uiTiles);
 
     return CustomPaint(
       key: Key(
@@ -101,7 +125,7 @@ extension _TileDataModelUiExtension on TileDataModel {
     position: tilePosition.position,
     tileset: tileset ?? Tileset({}),
     rasterTileset: rasterTileset ?? const RasterTileset(tiles: {}),
-    renderData: renderData
+    renderData: renderData,
   );
 }
 
