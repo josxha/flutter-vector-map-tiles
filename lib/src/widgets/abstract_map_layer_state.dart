@@ -37,7 +37,9 @@ abstract class AbstractMapLayerState<T extends AbstractMapLayer>
   double get rotation => _mapAdapter?.rotation ?? 0.0;
 
   void updateTiles(BuildContext context) {
-    for (final tile in mapTiles.tileModels.where((model) => model.isLoaded && !model.isDisplayReady)) {
+    for (final tile in mapTiles.tileModels.where(
+      (model) => model.isLoaded && !model.isDisplayReady,
+    )) {
       preRender(tile).then((_) {
         tile.isDisplayReady = tile.isLoaded;
       });
@@ -46,6 +48,13 @@ abstract class AbstractMapLayerState<T extends AbstractMapLayer>
   }
 
   Future<void> preRender(TileDataModel tile) => Future.sync(() {});
+
+  void resetState() {
+    mapTiles.dispose();
+    mapTiles = MapTiles(tileLoader: tileLoader);
+    mapTiles.addListener(_mapUpdated);
+    setState(() {});
+  }
 
   @override
   void initState() {
