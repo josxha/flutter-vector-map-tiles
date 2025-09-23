@@ -34,14 +34,14 @@ class VectorTileLayer extends StatelessWidget {
   /// The default [concurrency]
   static const defaultConcurrency = 4;
 
-  /// the maximum size of the file-based cache in entries.
+  /// the maximum size of the file-based cache in bytes.
   /// the cache does a good-enough effort to keep the cache size
   /// within the specified limit, however the size can exceed the
   /// specified limit from time to time.
-  final int fileCacheMaximumEntries;
+  final int fileCacheMaximumSizeInBytes;
 
-  /// the default [fileCacheMaximumEntries]
-  static const defaultFileCacheMaximumEntries = 10240;
+  /// the default [fileCacheMaximumSizeInBytes]
+  static const defaultCacheMaxSize = 50 * 1024 * 1024;
 
   /// the time to live of items in the file cache
   /// consider the terms of your tile provider service
@@ -64,7 +64,7 @@ class VectorTileLayer extends StatelessWidget {
     required this.tileOffset,
     this.concurrency = defaultConcurrency,
     this.fileCacheTtl = defaultCacheTtl,
-    this.fileCacheMaximumEntries = defaultFileCacheMaximumEntries,
+    this.fileCacheMaximumSizeInBytes = defaultCacheMaxSize,
     this.cacheFolder,
   });
 
@@ -89,7 +89,7 @@ class VectorTileLayer extends StatelessWidget {
     concurrency: concurrency,
     cacheProperties: CacheProperties(
       fileCacheTtl: fileCacheTtl,
-      fileCacheMaximumEntries: fileCacheMaximumEntries,
+      fileCacheMaximumSizeInBytes: fileCacheMaximumSizeInBytes,
       cacheFolder: cacheFolder,
     ),
   );
