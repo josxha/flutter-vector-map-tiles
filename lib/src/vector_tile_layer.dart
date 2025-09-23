@@ -69,7 +69,8 @@ class VectorTileLayer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => _buildGpu(context);
+  Widget build(BuildContext context) =>
+      SizedBox.expand(child: _buildGpu(context));
 
   Widget _buildGpu(BuildContext context) => MapLayer(
     key: Key('map_layer_${theme.id}_${theme.version}'),
