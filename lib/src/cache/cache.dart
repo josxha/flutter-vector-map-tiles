@@ -5,14 +5,14 @@ typedef LoadFunction = Future<Uint8List> Function(String key);
 
 class CacheProperties {
   final Duration fileCacheTtl;
-  final int fileCacheMaximumEntries;
+  final int fileCacheMaximumSizeInBytes;
   final int memoryCacheMaximumEntries = 50;
   final bool statsEnabled = false;
   final Future<Directory> Function()? cacheFolder;
 
   const CacheProperties({
     required this.fileCacheTtl,
-    required this.fileCacheMaximumEntries,
+    required this.fileCacheMaximumSizeInBytes,
     required this.cacheFolder,
   });
 }

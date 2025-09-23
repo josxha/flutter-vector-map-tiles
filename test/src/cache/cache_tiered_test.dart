@@ -15,7 +15,7 @@ void main() {
       tempDir = await Directory.systemTemp.createTemp('cache_tiered_test');
       properties = CacheProperties(
         fileCacheTtl: const Duration(hours: 1),
-        fileCacheMaximumEntries: 100,
+        fileCacheMaximumSizeInBytes: 1024 * 1024 * 50,
         cacheFolder: () async => tempDir,
       );
       cache = CacheTiered(properties: properties);
@@ -191,7 +191,7 @@ void main() {
     test('handles memory tier eviction gracefully', () async {
       final smallMemoryProperties = CacheProperties(
         fileCacheTtl: const Duration(hours: 1),
-        fileCacheMaximumEntries: 100,
+        fileCacheMaximumSizeInBytes: 1024,
         cacheFolder: () async => tempDir,
       );
       final smallMemoryCache = CacheTiered(properties: smallMemoryProperties);
@@ -278,7 +278,7 @@ void main() {
     test('creates tiered cache with memory and file components', () async {
       final properties = CacheProperties(
         fileCacheTtl: const Duration(hours: 1),
-        fileCacheMaximumEntries: 100,
+        fileCacheMaximumSizeInBytes: 1024,
         cacheFolder: () async => tempDir,
       );
 

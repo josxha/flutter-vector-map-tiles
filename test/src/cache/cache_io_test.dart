@@ -15,7 +15,7 @@ void main() {
       tempDir = await Directory.systemTemp.createTemp('cache_io_test');
       properties = CacheProperties(
         fileCacheTtl: const Duration(hours: 1),
-        fileCacheMaximumEntries: 100,
+        fileCacheMaximumSizeInBytes: 1024,
         cacheFolder: () async => tempDir,
       );
       cache = CacheIo(properties: properties);
@@ -156,7 +156,7 @@ void main() {
     test('respects cache TTL configuration', () async {
       final shortTtlProperties = CacheProperties(
         fileCacheTtl: const Duration(milliseconds: 1),
-        fileCacheMaximumEntries: 100,
+        fileCacheMaximumSizeInBytes: 1024 * 1024,
         cacheFolder: () async => tempDir,
       );
       final shortTtlCache = CacheIo(properties: shortTtlProperties);
@@ -165,6 +165,9 @@ void main() {
 
       await shortTtlCache.get(key, load: (key) async => testData);
       await Future.delayed(const Duration(milliseconds: 10));
+
+      final binaryCache = await createStashIoCache(shortTtlProperties);
+      await (binaryCache as dynamic).applyConstraints();
 
       var loadCalled = false;
       await shortTtlCache.get(
@@ -176,6 +179,102 @@ void main() {
       );
 
       expect(loadCalled, isTrue);
+    });
+
+    test('enforces maximum size in bytes', () async {
+      final smallSizeProperties = CacheProperties(
+        fileCacheTtl: const Duration(hours: 1),
+        fileCacheMaximumSizeInBytes: 100,
+        cacheFolder: () async => tempDir,
+      );
+      final smallCache = CacheIo(properties: smallSizeProperties);
+
+      final data1 = Uint8List.fromList(List.filled(60, 1));
+      final data2 = Uint8List.fromList(List.filled(60, 2));
+
+      await smallCache.get('key1', load: (key) async => data1);
+      await smallCache.get('key2', load: (key) async => data2);
+
+      final binaryCache = await createStashIoCache(smallSizeProperties);
+      await (binaryCache as dynamic).applyConstraints();
+
+      final key1Exists = await binaryCache.containsKey('key1');
+      final key2Exists = await binaryCache.containsKey('key2');
+
+      expect(key1Exists || key2Exists, isTrue);
+      expect(key1Exists && key2Exists, isFalse);
+    });
+
+    test(
+      'evicts least recently accessed entries when size limit exceeded',
+      () async {
+        final smallSizeProperties = CacheProperties(
+          fileCacheTtl: const Duration(hours: 1),
+          fileCacheMaximumSizeInBytes: 150,
+          cacheFolder: () async => tempDir,
+        );
+        final smallCache = CacheIo(properties: smallSizeProperties);
+
+        final data1 = Uint8List.fromList(List.filled(60, 1));
+        final data2 = Uint8List.fromList(List.filled(60, 2));
+        final data3 = Uint8List.fromList(List.filled(60, 3));
+
+        await smallCache.get('key1', load: (key) async => data1);
+        await Future.delayed(const Duration(milliseconds: 10));
+        await smallCache.get('key2', load: (key) async => data2);
+        await Future.delayed(const Duration(milliseconds: 10));
+        await smallCache.get('key3', load: (key) async => data3);
+
+        final binaryCache = await createStashIoCache(smallSizeProperties);
+        await (binaryCache as dynamic).applyConstraints();
+
+        final key1Exists = await binaryCache.containsKey('key1');
+        final key2Exists = await binaryCache.containsKey('key2');
+        final key3Exists = await binaryCache.containsKey('key3');
+
+        expect(key1Exists, isFalse);
+        expect(key2Exists || key3Exists, isTrue);
+      },
+    );
+
+    test('size constraints are eventually consistent', () async {
+      final smallSizeProperties = CacheProperties(
+        fileCacheTtl: const Duration(hours: 1),
+        fileCacheMaximumSizeInBytes: 100,
+        cacheFolder: () async => tempDir,
+      );
+      final smallCache = CacheIo(properties: smallSizeProperties);
+
+      final data1 = Uint8List.fromList(List.filled(60, 1));
+      final data2 = Uint8List.fromList(List.filled(60, 2));
+
+      await smallCache.get('key1', load: (key) async => data1);
+      await smallCache.get('key2', load: (key) async => data2);
+
+      final binaryCache = await createStashIoCache(smallSizeProperties);
+      final key1Exists = await binaryCache.containsKey('key1');
+      final key2Exists = await binaryCache.containsKey('key2');
+
+      expect(key1Exists, isTrue);
+      expect(key2Exists, isTrue);
+    });
+
+    test('applies constraints after multiple puts', () async {
+      final smallSizeProperties = CacheProperties(
+        fileCacheTtl: const Duration(hours: 1),
+        fileCacheMaximumSizeInBytes: 100,
+        cacheFolder: () async => tempDir,
+      );
+
+      final binaryCache = await createStashIoCache(smallSizeProperties);
+      final data = Uint8List.fromList(List.filled(30, 1));
+
+      for (int i = 0; i < 25; i++) {
+        await binaryCache.put('key$i', data);
+      }
+
+      final size = await binaryCache.size;
+      expect(size, lessThan(25));
     });
   });
 
@@ -195,7 +294,7 @@ void main() {
     test('creates cache with custom folder', () async {
       final properties = CacheProperties(
         fileCacheTtl: const Duration(hours: 2),
-        fileCacheMaximumEntries: 200,
+        fileCacheMaximumSizeInBytes: 1024 * 1024,
         cacheFolder: () async => tempDir,
       );
 

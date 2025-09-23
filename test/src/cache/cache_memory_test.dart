@@ -12,7 +12,7 @@ void main() {
     setUp(() {
       properties = const CacheProperties(
         fileCacheTtl: Duration(hours: 1),
-        fileCacheMaximumEntries: 100,
+        fileCacheMaximumSizeInBytes: 1024 * 1024 * 50,
         cacheFolder: null,
       );
       cache = CacheMemory(properties: properties);

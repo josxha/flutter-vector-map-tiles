@@ -16,7 +16,7 @@ Future<BinaryCache> createStashMemoryCache(CacheProperties properties) async {
   final store = await newMemoryCacheStore();
   return store.cache(
     name: 'memory',
-    evictionPolicy: LruEvictionPolicy(),
+    evictionPolicy: const LruEvictionPolicy(),
     maxEntries: properties.memoryCacheMaximumEntries,
     statsEnabled: properties.statsEnabled,
   );
