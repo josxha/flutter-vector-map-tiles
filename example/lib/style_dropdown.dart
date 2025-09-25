@@ -82,11 +82,6 @@ enum StyleData {
     uri: 'https://api.maptiler.com/maps/streets-v2/style.json?key={key}',
     apiKey: maptilerApiKey,
   ),
-  mapTilerBasic(
-    name: 'MapTiler Basic',
-    uri: 'https://api.maptiler.com/tiles/v3-openmaptiles/tiles.json?key={key}',
-    apiKey: maptilerApiKey,
-  ),
   stadiaMapsAlidade(
     name: 'StadiaMaps Alidada Smooth',
     uri:
