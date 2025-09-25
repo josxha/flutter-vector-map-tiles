@@ -21,7 +21,7 @@ class MapLayer extends AbstractMapLayer {
 }
 
 class MapLayerState extends AbstractMapLayerState<MapLayer> {
-  late final TilesRenderer tilesRenderer;
+  late TilesRenderer tilesRenderer;
   var _ready = false;
   @override
   void initState() {
